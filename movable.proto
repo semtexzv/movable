@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+message GetInfo {
+  string name = 1;
+}
+
+message Info {
+
+}
+
+message Sync {
+
+}
+
+message Chunk {
+
+}
+
+service MovableNode {
+  rpc Info(GetInfo) returns (Info);
+  rpc Sync(Sync) returns (stream Chunk);
+
+}

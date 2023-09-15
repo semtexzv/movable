@@ -1,0 +1,27 @@
+[package]
+name = "movable"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
+
+axum = "0.6.18"
+hyperlocal = "0.8.0"
+
+tokio = { version = "1.28.2", features = ["rt", "macros", "net", "time", "signal"] }
+async-trait = "0.1.68"
+
+anyhow = "1.0.71"
+serde = "1.0.164"
+serde_json = "1.0.97"
+
+openraft = "0.8.3"
+openraft-rocksstore = "0.8.3"
+
+bollard = "0.14.0"
+docker_plugin = "0.0.3"
+
+[build-dependencies]
+protokit_build = 
