@@ -1,23 +1,79 @@
 syntax = "proto3";
-
-message GetInfo {
-  string name = 1;
-}
-
-message Info {
-
-}
-
-message Sync {
-
-}
+package movable;
 
 message Chunk {
-
+  fixed64 hash = 1;
+  uint64 start = 2;
+  uint32 len = 3;
 }
 
-service MovableNode {
-  rpc Info(GetInfo) returns (Info);
-  rpc Sync(Sync) returns (stream Chunk);
+message Params {
+  uint32 min_size = 1;
+  uint32 avg_size = 2;
+  uint32 max_size = 3;
+}
 
+message File {
+  // Path local to volume
+  string path = 1;
+  Params params = 2;
+  repeated Chunk chunks = 3;
+}
+
+message Meta {
+  // What is the volume name
+  string volume = 1;
+}
+
+// Request sync of a volume
+message Info {
+  oneof Kind {
+    // Basic information about the state of the repository
+    Meta meta = 1;
+    // Information about a file within.
+    File file = 2;
+    // End marker once we have sent the volume state
+    bool done = 3;
+  }
+}
+
+message Create {
+  string path = 1;
+}
+
+message Delete {
+  string path = 1;
+}
+
+message Copy {
+  string src_path = 1;
+  string dst_path = 2;
+}
+
+message Data {
+  bytes data = 1;
+  uint64 pos = 2;
+  uint64 len = 3;
+}
+
+message Update {
+  oneof Kind {
+    // Client should create a new file (contents will follow)
+    Create create = 1;
+    // Client should delete a file (if he wants)
+    Delete delete = 2;
+    // Client should copy file contents from one to another
+    Copy   copy = 3;
+    // Client should append to file
+    Data   data = 4;
+    // This stream has finished
+    bool   done = 5;
+  }
+}
+
+service Movable {
+  // Sync a volume from remote node. This is a push based system,
+  // where we initiate sync, and the remote node keeps pushing us
+  // the changes.
+  rpc Sync(stream Info) returns (stream Update);
 }
